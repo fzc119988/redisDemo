@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
-    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:mvc="http://www.springframework.org/schema/mvc"
-    xmlns:context="http://www.springframework.org/schema/context"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:mvc="http://www.springframework.org/schema/mvc"
+        xmlns:cache="http://www.springframework.org/schema/cache"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/aop
+         http://www.springframework.org/schema/aop
          http://www.springframework.org/schema/aop/spring-aop.xsd
          http://www.springframework.org/schema/context 
          http://www.springframework.org/schema/context/spring-context.xsd
@@ -13,10 +16,10 @@
          http://www.springframework.org/schema/tx/spring-tx.xsd
          http://www.springframework.org/schema/mvc
          http://www.springframework.org/schema/mvc/spring-mvc.xsd
-        ">
+         http://www.springframework.org/schema/cache
+         http://www.springframework.org/schema/cache/spring-cache-4.2.xsd">
 <!-- 默认的注解映射的支持 -->
     <mvc:annotation-driven/>
-
     <mvc:annotation-driven>
         <mvc:message-converters>
             <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
@@ -27,13 +30,77 @@
                 </property>
             </bean>
         </mvc:message-converters>
-    </mvc:annotation-driven> 
-        <!-- 注解扫描包 -->
-        <context:component-scan base-package="com.ssm.controller" />
-        <context:component-scan base-package="com.ssm.service.impl" />
-        <!-- 加载jdbc.properties文件  -->
+    </mvc:annotation-driven>
 
-        <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!--加载redis参数-->
+    <context:property-placeholder location="classpath:redis.properties" ignore-unresolvable="true"/>
+    <!-- jedis 连接池配置参数： -->
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <!-- 设置最大连接数 -->
+        <property name="maxTotal" value="${redis.maxActive}"></property>
+        <!-- 设置最大空闲数 -->
+        <property name="maxIdle" value="${redis.maxIdle}"></property>
+        <!-- 设置超时时间 -->
+        <property name="maxWaitMillis" value="${redis.maxWait}"></property>
+        <property name="testOnBorrow" value="${redis.testOnBorrow}"></property>
+        <property name="testOnReturn" value="${redis.testOnReturn}"></property>
+    </bean>
+
+    <!-- jedis 连接池 连接本地redis服务 构造器注入 -->
+    <bean id="pool" class="redis.clients.jedis.JedisPool">
+        <constructor-arg index="0" ref="poolConfig"/>
+        <constructor-arg index="1" value="${redis.host}"/>
+        <constructor-arg index="2" value="${redis.port}"/>
+        <constructor-arg index="3" value="${redis.maxWait}"/>
+    </bean>
+
+    <!-- redis cache config -->
+    <bean id="redisCache" class="com.ssm.clent.RedisCache">
+        <property name="pool" ref="pool"/>
+    </bean>
+    <!--&lt;!&ndash; jedis pool配置 &ndash;&gt;-->
+    <!--<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">-->
+        <!--&lt;!&ndash; 最大空闲时间 &ndash;&gt;-->
+        <!--<property name="maxIdle" value="${redis.maxIdle}" />-->
+        <!--&lt;!&ndash; 最大等待毫秒数&ndash;&gt;-->
+        <!--<property name="maxWaitMillis" value="${redis.maxWait}" />-->
+        <!--&lt;!&ndash; 连接有效性验证 &ndash;&gt;-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash; redis服务器中心 &ndash;&gt;-->
+    <!--<bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">-->
+
+        <!--<property name="port" value="${redis.port}" />-->
+        <!--&lt;!&ndash; redis端口 &ndash;&gt;-->
+        <!--<property name="hostName" value="${redis.host}" />-->
+        <!--&lt;!&ndash; redis密码-->
+        <!--<property name="password" value="${redis.password}" />   &ndash;&gt;-->
+        <!--&lt;!&ndash; 超时时间 &ndash;&gt;-->
+        <!--<property name="timeout" value="${redis.timeout}"></property>-->
+        <!--<property name="poolConfig" ref="poolConfig" />-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash; redis客户端模板 &ndash;&gt;-->
+    <!--<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">-->
+        <!--&lt;!&ndash; 注入连接工厂 &ndash;&gt;-->
+        <!--<property name="connectionFactory" ref="connectionFactory" />-->
+        <!--&lt;!&ndash; 配置key序列化类 &ndash;&gt;-->
+        <!--<property name="keySerializer">-->
+            <!--<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />-->
+        <!--</property>-->
+        <!--&lt;!&ndash; 配置value序列化类 &ndash;&gt;-->
+        <!--<property name="valueSerializer">-->
+            <!--<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />-->
+        <!--</property>-->
+    <!--</bean>-->
+    <!--<bean id="redisCache" class="com.ssm.clent.RedisCache">-->
+        <!--<property name="pool" ref="pool"/>-->
+    <!--</bean>-->
+
+    <!-- 注解扫描包 -->
+    <context:component-scan base-package="com.ssm" />
+        <!-- 加载jdbc.properties文件  -->
+        <context:property-placeholder location="classpath:jdbc.properties" ignore-unresolvable="true"/>
         <!--第一步: 配置数据源 -->
         <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
             <property name="jdbcUrl" value="${jdbc.url}"></property>
@@ -50,7 +117,8 @@
             <property name="configLocation" value="classpath:sqlConfig.xml"></property>
         </bean>
 
-        <!-- 配置mybatis的代理接口开发 * 接口类名和映射文件必须同名 * 接口类和映射文件必须在同一个目     录下 * 接口的映射文件的namespace名称必须是接口的全限定名 
+        <!-- 配置mybatis的代理接口开发 * 接口类名和映射文件必须同名 *
+        接口类和映射文件必须在同一个目录下 * 接口的映射文件的namespace名称必须是接口的全限定名
         * 接口的方法名必须和映射的statement的id一致 -->
         <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
             <!-- 扫描所有dao接口的实现，加入到ioc容器中  -->
@@ -78,6 +146,8 @@
                 <tx:method name="get*" read-only="true"/>
             </tx:attributes>
         </tx:advice>
-        
+
+    <import resource="spring-dubbo.xml"/>
+    <!--<import resource="spring-redis.xml"/>-->
 
 </beans>

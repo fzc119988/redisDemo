@@ -1,6 +1,8 @@
 package com.ssm.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable{
 
     //Ö÷¼ü
     private int id;

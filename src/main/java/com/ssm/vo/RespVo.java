@@ -1,9 +1,5 @@
 package com.ssm.vo;
-
-import java.io.Serializable;
-
-public class RespVo implements Serializable {
-    private static final long serialVersionUID = 6401595033946583507L;
+public class RespVo {
     private String code;
     private String msg;
     private Object data;
