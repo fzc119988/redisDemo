@@ -8,11 +8,7 @@ import com.ssm.model.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import redis.clients.jedis.Jedis;
-
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserInfoImpl implements UserInfo {
@@ -23,19 +19,18 @@ public class UserInfoImpl implements UserInfo {
     @Autowired(required = true)
     private RedisCache redisCache;
 
-    public String selectAll(int id) {
+    public String selectUser(int id) {
         User user;
-        String Id = Integer.toString(id);
+        String userId = Integer.toString(id);
         Jedis jedis = redisCache.getResource();
-        String string = jedis.get(Id);
-        if (string==null) {
+        String userValue = jedis.get(userId);
+        if (userValue==null) {
             user = mapper.findUserById(id);
-            String us=JSON.toJSONString(user);
-            String userId = JSON.toJSONString(Id);
-            jedis.set(userId, us);
+            String userJson=JSON.toJSONString(user);
+            jedis.set(userId, userJson);
             System.out.println("缓存上了");
         }
-        return string ;
+        return userValue ;
     }
 
 }

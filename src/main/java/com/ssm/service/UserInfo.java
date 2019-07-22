@@ -4,6 +4,6 @@ import com.ssm.model.User;
 
 
 public interface UserInfo {
-    String selectAll(int id) ;
+    String selectUser(int id) ;
 
 }
