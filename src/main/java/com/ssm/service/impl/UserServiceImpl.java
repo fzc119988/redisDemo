@@ -35,14 +35,12 @@ public class UserServiceImpl implements UserService {
         return userMapper.updateUser(user);
     }
 
-
     public boolean deleteUser(int id) {
         String userId =Integer.toString(id);
         Jedis jedis=redisCache.getResource();
         jedis.del(userId);
         return userMapper.deleteUser(id);
     }
-
 
     public User findUserById(int id) {
         User user = userMapper.findUserById(id);
