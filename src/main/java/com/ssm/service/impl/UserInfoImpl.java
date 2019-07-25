@@ -1,4 +1,5 @@
 package com.ssm.service.impl;
+
 import com.ssm.clent.RedisCache;
 import com.ssm.service.UserInfo;
 import com.alibaba.dubbo.config.annotation.Service;
@@ -12,7 +13,11 @@ import org.springframework.data.redis.core.RedisHash;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserInfoImpl implements UserInfo {
@@ -22,16 +27,23 @@ public class UserInfoImpl implements UserInfo {
 
     @Autowired(required = true)
     private RedisCache redisCache;
-    public static final String dateStart="2019/07/24/15/06";
-    public void times(int id){
-        String userId=Integer.toString(id);
-        Jedis jedis=redisCache.getResource();
-        Long total=jedis.incr(dateStart);
-        jedis.expire(dateStart,20);
-        String user=jedis.get(userId);
-        System.out.println(user.toString());
-        if(jedis.get(dateStart)==null) {
-            System.out.println("总访问量为：" + total);
+
+
+    public void times(int id) {
+        Date date = new Date();
+        String time = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
+        String userId = Integer.toString(id);
+        Jedis jedis = redisCache.getResource();
+        String user = jedis.get(userId);
+        Long total = jedis.incr(time);
+        String math = String.valueOf(total);
+        jedis.hset("number", time, math);
+        jedis.lpush("consumer",user);
+        List<String> list = jedis.lrange( "consumer", 0, -1 );
+        System.out.println(total);
+//      Set<String> products = jedis.hkeys("consumer");
+        for (String p : list) {
+            System.out.println(p);
         }
     }
 
@@ -40,17 +52,18 @@ public class UserInfoImpl implements UserInfo {
         String userId = Integer.toString(id);
         Jedis jedis = redisCache.getResource();
         String userValue = jedis.get(userId);
-        if (userValue==null) {
+        if (userValue == null) {
             user = mapper.findUserById(id);
-            if(user==null){
-                return userValue ;
-            }else {
-                String userJson=JSON.toJSONString(user);
+            if (user == null) {
+                return userValue;
+            } else {
+                String userJson = JSON.toJSONString(user);
                 jedis.set(userId, userJson);
                 System.out.println("缓存上了");
             }
         }
         times(id);
-        return userValue ;
+        redisCache.returnResource(jedis);
+        return userValue;
     }
 }
