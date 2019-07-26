@@ -49,6 +49,8 @@ public class UserInfoImpl implements UserInfo {
             for (String p : list) {
                 System.out.println(p);
             }
+        }else {
+            System.out.println("所访问的对象为空！");
         }
         redisCache.returnResource(jedis);
     }
