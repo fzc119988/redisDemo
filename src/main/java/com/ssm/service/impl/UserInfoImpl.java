@@ -1,6 +1,5 @@
 package com.ssm.service.impl;
 
-        import com.alibaba.fastjson.JSONObject;
         import com.ssm.clent.RedisCache;
         import com.ssm.service.UserInfo;
         import com.alibaba.dubbo.config.annotation.Service;
@@ -11,7 +10,6 @@ package com.ssm.service.impl;
         import org.apache.commons.logging.LogFactory;
         import org.springframework.beans.factory.annotation.Autowired;
         import redis.clients.jedis.Jedis;
-
         import java.text.SimpleDateFormat;
         import java.util.Date;
         import java.util.List;
@@ -34,18 +32,20 @@ public class UserInfoImpl implements UserInfo {
     }
 
     private void sum() {
+        String math = "1";
         Jedis jedis = redisCache.getResource();
-        Long total = jedis.incr("1");
+        Long total = jedis.incr(math);
         System.out.println("总的访问数量为：" + total);
         redisCache.returnResource(jedis);
     }
 
     private void consumerSum(String time, String userValue) {
         Jedis jedis = redisCache.getResource();
-        String key = "consumer" + time;
+        String user = "consumer" + time;
+        jedis.lpush("allUser",user);
         if (userValue != null) {
-            jedis.lpush(key, userValue);
-            List<String> list = jedis.lrange(key, 0, -1);
+            jedis.lpush(user, userValue);
+            List<String> list = jedis.lrange(user, 0, -1);
             for (String p : list) {
                 System.out.println(p);
             }

@@ -1,5 +1,7 @@
 package com.ssm.service.impl;
+
 import java.util.List;
+
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.ssm.clent.RedisCache;
@@ -11,10 +13,8 @@ import redis.clients.jedis.Jedis;
 
 @Service
 public class UserServiceImpl implements UserService {
-    /**
-     * ע��UserMapper�ӿ�
-     */
-    @Autowired(required=true)
+
+    @Autowired(required = true)
     private UserMapper userMapper;
 
     @Autowired(required = true)
@@ -25,19 +25,19 @@ public class UserServiceImpl implements UserService {
     }
 
     public boolean updateUser(User user) {
-        int id=user.getId();
-        String userId =Integer.toString(id);
-        Jedis jedis=redisCache.getResource();
+        int id = user.getId();
+        String userId = Integer.toString(id);
+        Jedis jedis = redisCache.getResource();
         jedis.del(userId);
         userMapper.updateUser(user);
-        String userJson= JSON.toJSONString(user);
+        String userJson = JSON.toJSONString(user);
         jedis.set(userId, userJson);
         return userMapper.updateUser(user);
     }
 
     public boolean deleteUser(int id) {
-        String userId =Integer.toString(id);
-        Jedis jedis=redisCache.getResource();
+        String userId = Integer.toString(id);
+        Jedis jedis = redisCache.getResource();
         jedis.del(userId);
         return userMapper.deleteUser(id);
     }
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
     public List<User> findAll() {
         List<User> allUser = userMapper.findAll();
         return allUser;
-}
+    }
 
 }
 

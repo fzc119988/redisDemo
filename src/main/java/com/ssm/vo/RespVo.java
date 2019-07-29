@@ -1,4 +1,5 @@
 package com.ssm.vo;
+
 public class RespVo {
     private String code;
     private String msg;
