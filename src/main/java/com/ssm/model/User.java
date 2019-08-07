@@ -10,6 +10,8 @@ public class User implements Serializable{
     private String username;
     //ÄêÁä
     private String age;
+    //ÓÊÏä
+    private String mail;
 
     public User() {
         super();
@@ -44,5 +46,13 @@ public class User implements Serializable{
 
     public void setAge(String age) {
         this.age = age;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 }

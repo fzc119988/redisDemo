@@ -18,10 +18,10 @@ package com.ssm.service.impl;
 @Service
 public class UserInfoImpl implements UserInfo {
     public static final Log LOG = LogFactory.getLog(UserInfo.class);
-    @Autowired(required = true)
+    @Autowired
     private UserMapper mapper;
 
-    @Autowired(required = true)
+    @Autowired
     private RedisCache redisCache;
 
     private void times(String time) {
@@ -75,6 +75,5 @@ public class UserInfoImpl implements UserInfo {
         redisCache.returnResource(jedis);
         return userValue;
     }
-
 
 }

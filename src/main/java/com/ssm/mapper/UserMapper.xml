@@ -7,18 +7,9 @@
  -->    
  <mapper namespace="com.ssm.mapper.UserMapper">
 
-    <!--<resultMap id="BaseResultMap"-->
-               <!--type="com.bbtree.operator.core.model.OperatorComboExtend">-->
-        <!--<id column="combo_id" jdbcType="INTEGER" property="comboId" />-->
-        <!--<result column="provinces" jdbcType="VARCHAR" property="provinces" />-->
-        <!--<result column="extend1" jdbcType="VARCHAR" property="extend1" />-->
-        <!--<result column="extend2" jdbcType="VARCHAR" property="extend2" />-->
-        <!--<result column="extend3" jdbcType="VARCHAR" property="extend3" />-->
-        <!---->
-    <!--</resultMap>-->
       <!-- 新增 -->
       <insert id="saveUser" parameterType="User"  >
-         insert into t_user(user_name,user_age) values (#{username},#{age})
+         insert into t_user(user_name,user_age,mail) values (#{username},#{age},#{mail})
       </insert>
 
       <!-- 修改 -->

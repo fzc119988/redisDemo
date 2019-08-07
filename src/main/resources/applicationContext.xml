@@ -4,15 +4,18 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
        xmlns:cache="http://www.springframework.org/schema/cache"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/rabbit
+         http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
          http://www.springframework.org/schema/aop
          http://www.springframework.org/schema/aop/spring-aop.xsd
-         http://www.springframework.org/schema/context 
+         http://www.springframework.org/schema/context
          http://www.springframework.org/schema/context/spring-context.xsd
-         http://www.springframework.org/schema/tx 
+         http://www.springframework.org/schema/tx
          http://www.springframework.org/schema/tx/spring-tx.xsd
          http://www.springframework.org/schema/mvc
          http://www.springframework.org/schema/mvc/spring-mvc.xsd
@@ -97,7 +100,7 @@
     <!-- 配置拦截service -->
     <aop:config>
         <aop:pointcut expression="execution(* com.ssm.service..*(..))" id="txPoint"/>
-        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPoint"/>
+         <aop:advisor advice-ref="txAdvice" pointcut-ref="txPoint"/>
     </aop:config>
     <!-- 配置事物增强,事物如何切入-->
     <tx:advice id="txAdvice" transaction-manager="txManager">
@@ -111,5 +114,45 @@
 
     <import resource="spring-dubbo.xml"/>
     <!--<import resource="spring-redis.xml"/>-->
+    <context:property-placeholder location="classpath:rabbitMQ.properties" ignore-unresolvable="true"/>
+
+    <!--配置connection-factory,指定连接rabbit server参数-->
+    <rabbit:connection-factory id="connectionFactory"
+                               username="${mq.username}"
+                               password="${mq.password}"
+                               host="${mq.host}"
+                               port="${mq.port}"/>
+    <!--2、配置队列queue, Exchange, 以及将他们结合在一起的binding-->
+    <!--在queue以及exchange中, 有一个重要的属性durable, 默认为true, 可以防止宕机后数据丢失。-->
+    <!--在listener-container中, 有acknowledge属性, 默认为auto, 即消费者成功处理消息后必须有个应答, 如果消费者程序发生异常或者宕机, 消息会被重新放回队列-->
+    <rabbit:admin connection-factory="connectionFactory"/>
+    <rabbit:queue id="userAlertEmailQueue" name="user.alerts.email" durable="true"/>  <!--durable默认为true-->
+
+    <!--标准的AMQP Exchange有4种: Direct, Topic, Headers, Fanout, 根据实际需要选择。-->
+    <!--Direct: 如果消息的routing key与bingding的routing key直接匹配的话, 消息将会路由到该队列上。-->
+    <!--Topic: 如果消息的routing key与bingding的routing key符合通配符匹配的话, 消息将会路由到该队列上。-->
+    <!--Headers: 如果消息参数表中的头信息和值都与binding参数表中相匹配, 消息将会路由到该队列上。-->
+    <!--Fanout: 不管消息的routing key和参数表的头信息/值是什么, 消息将会路由到该队列上。-->
+    <rabbit:direct-exchange name="user.alert.email.exchange" durable="true">
+        <rabbit:bindings>
+            <rabbit:binding queue="user.alerts.email"/>     <!--默认的routing key与队列的名称相同-->
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+    <!--3、配置RabbitTemplate发送消息-->
+    <rabbit:template id="rabbitTemplate"
+                     connection-factory="connectionFactory"/>
+
+    <!--4、配置监听器容器和监听器来接收消息-->
+    <bean id="userListener" class="com.ssm.service.handler.UserAlertHandler"></bean>
+    <!--concurrency: 初始化监听器容器时, 并发消费者的数目.-->
+    <!--max-concurrency: 并发消费者的最大数目.-->
+    <!--prefetch: 一次最多可以发送给同一个消费者的消息数目.-->
+    <rabbit:listener-container connection-factory="connectionFactory"
+                               acknowledge="auto" prefetch="2" concurrency="2" max-concurrency="5">
+        <rabbit:listener ref="userListener"
+                         method="sendEmailToUser"
+                         queues="userAlertEmailQueue"/>
+    </rabbit:listener-container>
 
 </beans>
