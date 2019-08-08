@@ -112,7 +112,26 @@
         </tx:attributes>
     </tx:advice>
 
-    <import resource="spring-dubbo.xml"/>
+    <!--邮件发送bean配置-->
+    <context:property-placeholder location="classpath:mail.properties" ignore-unresolvable="true"/>
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="${mail.host}" />
+        <property name="defaultEncoding" value="${mail.defaultEncoding}" />
+        <property name="username" value="${mail.username}" />
+        <property name="password" value="${mail.password}"/>
+
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">${mail.smtp.auth}</prop>
+                <prop key="mail.smtp.timeout">${mail.smtp.timeout}</prop>
+                <prop key="mail.smtp.starttls.enable">${mail.smtp.starttls.enable}</prop>
+                <prop key="mail.smtp.starttls.required">${mail.smtp.starttls.required}</prop>
+            </props>
+        </property>
+    </bean>
+
+
     <!--<import resource="spring-redis.xml"/>-->
     <context:property-placeholder location="classpath:rabbitMQ.properties" ignore-unresolvable="true"/>
 
@@ -130,29 +149,29 @@
 
     <!--标准的AMQP Exchange有4种: Direct, Topic, Headers, Fanout, 根据实际需要选择。-->
     <!--Direct: 如果消息的routing key与bingding的routing key直接匹配的话, 消息将会路由到该队列上。-->
-    <!--Topic: 如果消息的routing key与bingding的routing key符合通配符匹配的话, 消息将会路由到该队列上。-->
+    <!--Topic: 如果消息的routing key与bingding的routing key符和通配符匹配的话, 消息将会路由到该队列上。-->
     <!--Headers: 如果消息参数表中的头信息和值都与binding参数表中相匹配, 消息将会路由到该队列上。-->
     <!--Fanout: 不管消息的routing key和参数表的头信息/值是什么, 消息将会路由到该队列上。-->
     <rabbit:direct-exchange name="user.alert.email.exchange" durable="true">
         <rabbit:bindings>
-            <rabbit:binding queue="user.alerts.email"/>     <!--默认的routing key与队列的名称相同-->
+            <rabbit:binding queue="user.alerts.email" />     <!--默认的routing key与队列的名称相同-->
         </rabbit:bindings>
     </rabbit:direct-exchange>
-
     <!--3、配置RabbitTemplate发送消息-->
     <rabbit:template id="rabbitTemplate"
                      connection-factory="connectionFactory"/>
-
     <!--4、配置监听器容器和监听器来接收消息-->
     <bean id="userListener" class="com.ssm.service.handler.UserAlertHandler"></bean>
     <!--concurrency: 初始化监听器容器时, 并发消费者的数目.-->
     <!--max-concurrency: 并发消费者的最大数目.-->
     <!--prefetch: 一次最多可以发送给同一个消费者的消息数目.-->
     <rabbit:listener-container connection-factory="connectionFactory"
-                               acknowledge="auto" prefetch="2" concurrency="2" max-concurrency="5">
+                               acknowledge="manual" prefetch="2" concurrency="2" max-concurrency="5">
         <rabbit:listener ref="userListener"
-                         method="sendEmailToUser"
                          queues="userAlertEmailQueue"/>
     </rabbit:listener-container>
+
+    <import resource="spring-dubbo.xml"/>
+
 
 </beans>

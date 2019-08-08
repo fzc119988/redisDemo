@@ -7,6 +7,31 @@
           <element id="module-output" name="SpringMvc_Spring_mybatis" />
         </element>
         <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.apache.maven.plugins:maven-surefire-plugin:2.7.1" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-plugin-api:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven.surefire:surefire-booter:2.7.1" />
+          <element id="library" level="project" name="Maven: org.apache.maven.surefire:surefire-api:2.7.1" />
+          <element id="library" level="project" name="Maven: org.apache.maven.surefire:maven-surefire-common:2.7.1" />
+          <element id="library" level="project" name="Maven: org.apache.maven.shared:maven-common-artifact-filters:1.3" />
+          <element id="library" level="project" name="Maven: org.codehaus.plexus:plexus-utils:2.0.5" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-artifact:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-project:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-settings:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-profile:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-model:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-artifact-manager:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-plugin-registry:2.0.9" />
+          <element id="library" level="project" name="Maven: org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-core:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-plugin-parameter-documenter:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven.reporting:maven-reporting-api:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven.wagon:wagon-provider-api:1.0-beta-2" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-repository-metadata:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-error-diagnostics:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-plugin-descriptor:2.0.9" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-monitor:2.0.9" />
+          <element id="library" level="project" name="Maven: classworlds:classworlds:1.1" />
+          <element id="library" level="project" name="Maven: org.apache.maven:maven-toolchain:2.0.9" />
           <element id="library" level="project" name="Maven: org.springframework:spring-webmvc:4.3.7.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-aop:4.3.7.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-beans:4.3.7.RELEASE" />
@@ -59,13 +84,8 @@
           <element id="library" level="project" name="Maven: org.apache.httpcomponents:httpcore:4.3.3" />
           <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.6" />
           <element id="library" level="project" name="Maven: org.springframework:spring-messaging:4.2.6.RELEASE" />
-          <element id="library" level="project" name="Maven: com.bbtree.commons:bbtree-commons:1.3.8" />
-          <element id="library" level="project" name="Maven: com.bbtree.commons:bbtree-commons-email:1.3.7" />
           <element id="library" level="project" name="Maven: javax.mail:mail:1.4.7" />
           <element id="library" level="project" name="Maven: javax.activation:activation:1.1" />
-          <element id="library" level="project" name="Maven: org.apache.velocity:velocity:1.7" />
-          <element id="library" level="project" name="Maven: commons-collections:commons-collections:3.2.1" />
-          <element id="library" level="project" name="Maven: commons-lang:commons-lang:2.4" />
         </element>
       </element>
       <element id="directory" name="META-INF">

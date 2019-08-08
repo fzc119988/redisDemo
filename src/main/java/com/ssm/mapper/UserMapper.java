@@ -1,7 +1,9 @@
 package com.ssm.mapper;
 
-import java.util.List;
 import com.ssm.model.User;
+
+import java.util.List;
+
 
 public interface UserMapper {
 

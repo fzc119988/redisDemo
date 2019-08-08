@@ -1,28 +1,29 @@
 package com.ssm.service.impl;
 
-        import com.ssm.clent.RedisCache;
-        import com.ssm.service.UserInfo;
-        import com.alibaba.dubbo.config.annotation.Service;
-        import com.alibaba.fastjson.JSON;
-        import com.ssm.mapper.UserMapper;
-        import com.ssm.model.User;
-        import org.apache.commons.logging.Log;
-        import org.apache.commons.logging.LogFactory;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import redis.clients.jedis.Jedis;
-        import java.text.SimpleDateFormat;
-        import java.util.Date;
-        import java.util.List;
+import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
+import com.ssm.clent.RedisCache;
+import com.ssm.mapper.UserMapper;
+import com.ssm.model.User;
+import com.ssm.service.UserInfo;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import redis.clients.jedis.Jedis;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 
 @Service
 public class UserInfoImpl implements UserInfo {
     public static final Log LOG = LogFactory.getLog(UserInfo.class);
     @Autowired
-    private UserMapper mapper;
+    private RedisCache redisCache;
 
     @Autowired
-    private RedisCache redisCache;
+    private UserMapper mapper;
 
     private void times(String time) {
         Jedis jedis = redisCache.getResource();

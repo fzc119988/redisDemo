@@ -184,11 +184,21 @@
             <version>1.4.7</version>
         </dependency>
 
-
+        <!--<dependency>-->
+            <!--<groupId>org.apache.commons</groupId>-->
+            <!--<artifactId>commons-email</artifactId>-->
+            <!--<version>1.5</version>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; spring mail需要的jar包 &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>javax.mail</groupId>-->
+            <!--<artifactId>mail</artifactId>-->
+            <!--<version>1.4.7</version>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>
-        <resources>        
+        <resources>
             <resource>
                 <directory>src/main/java</directory>
                 <includes>
@@ -197,6 +207,15 @@
                 </includes>
                 <filtering>false</filtering>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
         </resources>
+
     </build>
 </project>
